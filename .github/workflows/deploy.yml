@@ -1,0 +1,21 @@
+name: Deploy to k3s
+
+on:
+  push:
+    branches: [ "master" ]
+
+jobs:
+  build-deploy:
+    runs-on: self-hosted
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Build Docker image
+      run: |
+        docker build -t myapp:latest .
+
+    - name: Push to k3s
+      run: |
+        kubectl set image deployment/nginx-deployment nginx=myapp:latest
+        kubectl rollout status deployment/nginx-deployment
